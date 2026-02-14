@@ -186,15 +186,19 @@ const NDVPanel = () => {
           </div>
         </div>
 
-        {/* Resizer: Input ↔ Parameters */}
-        <VerticalResizer onMouseDown={handleInputResize} />
-
         {/* PARAMETERS Panel (center) */}
         <div className="flex flex-1 flex-col bg-ndv-panel">
-          {/* Top center pill handle (column resizer indicator) */}
-          <div className="relative flex items-center justify-center py-0">
-            <div className="absolute -top-[1px] z-20 flex h-[6px] w-12 cursor-col-resize items-center justify-center rounded-b-md bg-border hover:bg-muted-foreground/40 transition-colors">
-              <div className="h-[2px] w-6 rounded-full bg-muted-foreground/40" />
+          {/* Top center pill handle — drags the Input/Parameters divider */}
+          <div className="relative flex items-center justify-center">
+            <div
+              onMouseDown={handleInputResize}
+              className="absolute -top-[1px] z-20 flex h-[22px] w-[52px] cursor-col-resize items-center justify-center rounded-b-lg border border-t-0 border-ndv-panel-border bg-ndv-panel hover:bg-muted transition-colors shadow-sm"
+            >
+              <div className="flex gap-[3px]">
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+              </div>
             </div>
           </div>
           {/* Tabs */}
