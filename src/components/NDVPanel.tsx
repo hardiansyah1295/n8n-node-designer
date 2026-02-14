@@ -262,11 +262,21 @@ const NDVPanel = () => {
           </div>
         </div>
 
-        {/* Resizer: Parameters ↔ Output */}
-        <VerticalResizer onMouseDown={handleOutputResize} />
-
         {/* OUTPUT Panel */}
         <div style={{ width: outputWidth }} className="flex flex-shrink-0 flex-col border-l border-ndv-panel-border bg-ndv-panel">
+          {/* Top center pill handle — drags the Parameters/Output divider */}
+          <div className="relative flex items-center justify-center">
+            <div
+              onMouseDown={handleOutputResize}
+              className="absolute -top-[1px] z-20 flex h-[22px] w-[52px] cursor-col-resize items-center justify-center rounded-b-lg border border-t-0 border-ndv-panel-border bg-ndv-panel hover:bg-muted transition-colors shadow-sm"
+            >
+              <div className="flex gap-[3px]">
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+                <div className="h-3 w-[1.5px] rounded-full bg-muted-foreground/40" />
+              </div>
+            </div>
+          </div>
           <div className="flex items-center justify-between border-b border-ndv-panel-border px-4 py-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Output</span>
             <div className="flex items-center gap-1">
