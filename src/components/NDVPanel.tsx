@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { ChevronRight, ChevronDown, Search, Pencil, X, ExternalLink, TriangleAlert, CircleCheck, Info, Copy, Trash2, GripVertical } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { ChevronRight, ChevronDown, Search, Pencil, X, ExternalLink, TriangleAlert, CircleCheck, Info, Copy, Trash2, GripVertical, GripHorizontal } from "lucide-react";
 
 interface FieldData {
   name: string;
@@ -42,12 +42,62 @@ const outputData = [
   { key: "chat", value: "halo", type: "T" },
 ];
 
+/* Vertical resize handle between panels */
+const VerticalResizer = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent) => void }) => (
+  <div
+    onMouseDown={onMouseDown}
+    className="group relative flex w-0 cursor-col-resize items-center justify-center"
+  >
+    <div className="absolute z-10 flex h-full w-4 items-center justify-center">
+      <div className="flex h-8 w-3 items-center justify-center rounded-sm opacity-0 transition-opacity group-hover:opacity-100 bg-muted">
+        <GripVertical className="h-4 w-3 text-muted-foreground" />
+      </div>
+    </div>
+  </div>
+);
+
 const NDVPanel = () => {
   const [activeParamTab, setActiveParamTab] = useState<"Parameters" | "Settings">("Parameters");
   const [activeInputView, setActiveInputView] = useState<"Schema" | "Table" | "JSON">("Schema");
   const [activeOutputView, setActiveOutputView] = useState<"Schema" | "Table" | "JSON">("Schema");
   const [inputTreeOpen, setInputTreeOpen] = useState(true);
   const [variablesOpen, setVariablesOpen] = useState(false);
+
+  const [inputWidth, setInputWidth] = useState(280);
+  const [outputWidth, setOutputWidth] = useState(320);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const handleInputResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = inputWidth;
+    const onMove = (ev: MouseEvent) => {
+      const diff = ev.clientX - startX;
+      setInputWidth(Math.max(180, Math.min(500, startWidth + diff)));
+    };
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, [inputWidth]);
+
+  const handleOutputResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = outputWidth;
+    const onMove = (ev: MouseEvent) => {
+      const diff = startX - ev.clientX;
+      setOutputWidth(Math.max(200, Math.min(600, startWidth + diff)));
+    };
+    const onUp = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  }, [outputWidth]);
 
   return (
     <div className="flex h-screen w-full flex-col bg-ndv-bg">
@@ -68,9 +118,9 @@ const NDVPanel = () => {
       </div>
 
       {/* Main 3-panel layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div ref={containerRef} className="flex flex-1 overflow-hidden">
         {/* INPUT Panel */}
-        <div className="flex w-[280px] flex-shrink-0 flex-col border-r border-ndv-panel-border bg-ndv-panel">
+        <div style={{ width: inputWidth }} className="flex flex-shrink-0 flex-col border-r border-ndv-panel-border bg-ndv-panel">
           <div className="flex items-center justify-between border-b border-ndv-panel-border px-4 py-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Input</span>
             <div className="flex gap-1">
@@ -131,8 +181,17 @@ const NDVPanel = () => {
           </div>
         </div>
 
+        {/* Resizer: Input ↔ Parameters */}
+        <VerticalResizer onMouseDown={handleInputResize} />
+
         {/* PARAMETERS Panel (center) */}
         <div className="flex flex-1 flex-col bg-ndv-panel">
+          {/* Resizer handle bar at top center */}
+          <div className="flex items-center justify-center border-b border-ndv-panel-border py-1">
+            <div className="flex h-3 w-10 items-center justify-center rounded-sm">
+              <div className="h-1 w-8 rounded-full bg-border" />
+            </div>
+          </div>
           {/* Tabs */}
           <div className="flex items-center border-b border-ndv-panel-border">
             <div className="flex gap-0">
@@ -194,8 +253,11 @@ const NDVPanel = () => {
           </div>
         </div>
 
+        {/* Resizer: Parameters ↔ Output */}
+        <VerticalResizer onMouseDown={handleOutputResize} />
+
         {/* OUTPUT Panel */}
-        <div className="flex w-[320px] flex-shrink-0 flex-col border-l border-ndv-panel-border bg-ndv-panel">
+        <div style={{ width: outputWidth }} className="flex flex-shrink-0 flex-col border-l border-ndv-panel-border bg-ndv-panel">
           <div className="flex items-center justify-between border-b border-ndv-panel-border px-4 py-2">
             <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Output</span>
             <div className="flex items-center gap-1">
