@@ -42,15 +42,20 @@ const outputData = [
   { key: "chat", value: "halo", type: "T" },
 ];
 
-/* Vertical resize handle between panels */
+/* Vertical resize handle — thin line with pill-shaped drag handle */
 const VerticalResizer = ({ onMouseDown }: { onMouseDown: (e: React.MouseEvent) => void }) => (
   <div
     onMouseDown={onMouseDown}
-    className="group relative flex w-0 cursor-col-resize items-center justify-center"
+    className="group relative z-10 flex w-[5px] cursor-col-resize items-stretch justify-center hover:bg-primary/10 transition-colors"
   >
-    <div className="absolute z-10 flex h-full w-4 items-center justify-center">
-      <div className="flex h-8 w-3 items-center justify-center rounded-sm opacity-0 transition-opacity group-hover:opacity-100 bg-muted">
-        <GripVertical className="h-4 w-3 text-muted-foreground" />
+    {/* Thin vertical line */}
+    <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border group-hover:bg-primary/30 transition-colors" />
+    {/* Pill-shaped handle in the center */}
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex h-8 w-[6px] items-center justify-center rounded-full bg-border group-hover:bg-muted-foreground/50 transition-colors shadow-sm">
+      <div className="flex flex-col gap-[2px]">
+        <div className="h-[2px] w-[2px] rounded-full bg-muted-foreground/60" />
+        <div className="h-[2px] w-[2px] rounded-full bg-muted-foreground/60" />
+        <div className="h-[2px] w-[2px] rounded-full bg-muted-foreground/60" />
       </div>
     </div>
   </div>
@@ -186,10 +191,10 @@ const NDVPanel = () => {
 
         {/* PARAMETERS Panel (center) */}
         <div className="flex flex-1 flex-col bg-ndv-panel">
-          {/* Resizer handle bar at top center */}
-          <div className="flex items-center justify-center border-b border-ndv-panel-border py-1">
-            <div className="flex h-3 w-10 items-center justify-center rounded-sm">
-              <div className="h-1 w-8 rounded-full bg-border" />
+          {/* Top center pill handle (column resizer indicator) */}
+          <div className="relative flex items-center justify-center py-0">
+            <div className="absolute -top-[1px] z-20 flex h-[6px] w-12 cursor-col-resize items-center justify-center rounded-b-md bg-border hover:bg-muted-foreground/40 transition-colors">
+              <div className="h-[2px] w-6 rounded-full bg-muted-foreground/40" />
             </div>
           </div>
           {/* Tabs */}
